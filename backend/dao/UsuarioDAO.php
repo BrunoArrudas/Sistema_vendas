@@ -48,53 +48,60 @@ class UsuarioDAO implements BaseDAO {
         try {
             // Preparar a consulta SQL
             $sql = "SELECT * FROM Usuario";
-
+    
             // Preparar a instrução
             $stmt = $this->db->prepare($sql);
-
-            // Executa a instrução
+    
+            // Executar a instrução
             $stmt->execute();
-
-            // Obtem o usuario encontrado;
-            $usuarios = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
+            // Obter todos os usuários encontrados
+            $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Retornar os usuários encontrados
             return array_map(function ($usuario) {
-                return new Usuario($usuario['Id'],
-                    $usuario['NomeUsuario'], 
-                    $usuario['Senha'], 
-                    $usuario['Email'], 
-                    $usuario['GrupoUsuarioID'],
-                    $usuario['Ativo'],
-                    $usuario['DataCriacao'],
-                    $usuario['DataAtualizacao']);
-            }, $usuarios);            
+                return new Usuario($usuario['Id'], 
+                            $usuario['NomeUsuario'], 
+                            $usuario['Senha'], 
+                            $usuario['Email'], 
+                            $usuario['GrupoUsuarioID'], 
+                            $usuario['Ativo'], 
+                            $usuario['DataCriacao'], 
+                            $usuario['DataAtualizacao']);
+            }, $usuarios);
         } catch (PDOException $e) {
-            return null;
+            return [];
         }
     }
+
 
     public function create($usuario) {
         try {
             // Preparar a consulta SQL
             $sql = "INSERT INTO Usuario( NomeUsuario , Senha , Email , GrupoUsuarioID , Ativo , DataCriacao , DataAtualizacao , UsuarioAtualizacao )
                     VALUES(:nomeUsuario, :senha, :email, :grupoUsuarioID, :ativo, current_timestamp(),current_timestamp(),null)";
-            
+
             // Preparar a instrução
             $stmt = $this->db->prepare($sql);
 
-            //Vincular parâmetros
-            $stmt->bindParam(':nomeUsuario', $usuario->getNomeUsuario());
-            $stmt->bindParam(':Senha', $usuario->getNomeSenha());
-            $stmt->bindParam(':Email', $usuario->getNomeEmail());
-            $stmt->bindParam(':GrupoUsuarioID', $usuario->getGrupoUsuarioID());
-            $stmt->bindParam(':Ativo', $usuario->getAtivo());
+             // Bind parameters by reference
+            $nomeUsuario = $usuario->getNomeUsuario();
+            $senha = $usuario->getSenha();
+            $email = $usuario->getEmail();
+            $grupoUsuarioID = $usuario->getGrupoUsuarioId();
+            $ativo = $usuario->getAtivo();
 
-            //Executar a instrução
+            $stmt->bindParam(':nomeUsuario', $nomeUsuario);
+            $stmt->bindParam(':senha', $senha);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioID);
+            $stmt->bindParam(':ativo', $ativo);
+            
+            // Executar a instrução
             $stmt->execute();
 
-            //Retornar verdadeiro se a inserção for bem sucedida
+            // Retornar verdadeiro se a inserção for bem sucedida
             return true;
-
         } catch (PDOException $e) {
             // TO-DO: implementar log
             return false;
@@ -115,13 +122,19 @@ class UsuarioDAO implements BaseDAO {
             WHERE Id = :id";
 
             $stmt = $this->db->prepare($sql);
+            $id = $usuario->getId();
+            $nome = $usuario->getNomeUsuario();
+            $senha = $usuario->getSenha();
+            $email = $usuario->getEmail();
+            $grupoUsuarioId = $usuario->getGrupoUsuarioId();
+            $ativo = $usuario->getAtivo();
 
-            $stmt->bindParam(':id', $usuario->getId());
-            $stmt->bindParam(':nomeUsuario', $usuario->getNomeUsuario());
-            $stmt->bindParam(':senha', $usuario->getSenha());
-            $stmt->bindParam(':email', $usuario->getEmail());
-            $stmt->bindParam(':grupoUsuarioID', $usuario->getGrupoUsuarioId());
-            $stmt->bindParam(':ativo', $usuario->getAtivo());
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':nomeUsuario', $nome);
+            $stmt->bindParam(':senha', $senha);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':grupoUsuarioID', $grupoUsuarioId);
+            $stmt->bindParam(':ativo', $ativo);
 
             $stmt->execute();
 
@@ -141,11 +154,9 @@ class UsuarioDAO implements BaseDAO {
             $stmt->execute();
 
             return true;
-
-        } catch (PDOException $e){
+        } catch (PDOException $e) {
             return false;
         }
-
     }
 }
 
