@@ -125,4 +125,3 @@ CREATE TABLE IF NOT EXISTS Usuario (
     UNIQUE (Email), -- Restrição UNIQUE na coluna Email
     FOREIGN KEY (GrupoUsuarioID) REFERENCES GrupoUsuario(Id)
 );
-

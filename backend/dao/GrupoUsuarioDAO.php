@@ -130,6 +130,14 @@ class GrupoUsuarioDAO implements BaseDAO {
             return false;
         }
     }
+
+    public function getGruposByPermissaoId($permissaoId) {
+        try {
+            
+        } catch (PDOException $e) {
+            return[];
+        }
+    }
 }
 
 ?>
